@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Catalogo Dashboards Promerica</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --green-600:#006338; --green-400:#61BF1A; --gray-500:#A6A6A6; --blue-800:#003E89; --teal-400:#69C7C7; --red-700:#A20000; --orange-600:#C35A00; --lime-500:#B9C301; --bg:#FFFFFF; --fg:#000000; --accent:#61BF1A;
+      --card-bg:#FFFFFF; --card-border:#E6E6E6; --muted:#5A5A5A; --chip-bg:#F5F5F5; --chip-fg:#222; --shadow:0 8px 24px rgba(0,0,0,.08);
+      --kbd-bg:#F2F2F2; --kbd-fg:#111; --input-bg:#FFFFFF; --input-border:#DADADA;
+    }
+    @media (prefers-color-scheme: dark){
+      html[data-theme="dark"]:root{
+        --bg:#0B0F0C; --fg:#F2F2F2; --card-bg:#111511; --card-border:#1F291F; --muted:#B7B7B7; --chip-bg:#1A231B; --chip-fg:#EDEDED; --shadow:0 12px 28px rgba(0,0,0,.45); --kbd-bg:#1E1E1E; --kbd-fg:#EDEDED; --input-bg:#121712; --input-border:#2A2F2A;
+      }
+    }
+    html,body{height:100%}
+    body{margin:0; font-family: Montserrat, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:var(--bg); color:var(--fg); line-height:1.35;}
+    .container{max-width:1280px; margin:0 auto; padding:24px;}
+
+    header{background:var(--green-600); color:#fff;}
+    .header-inner{display:flex; align-items:center; justify-content:space-between; gap:16px; padding:18px 24px;}
+    .brand{display:flex; align-items:center; gap:12px;}
+    .title-wrap{display:flex; flex-direction:column}
+    h1{margin:0; font-size: clamp(22px, 3.2vw, 32px); font-weight:700; line-height:1.1;}
+    .gradient-title{background:linear-gradient(90deg, var(--green-400), var(--lime-500)); -webkit-background-clip:text; background-clip:text; color:transparent;}
+
+    .content{display:grid; grid-template-columns: 1fr; gap:24px;}
+
+    .intro-box{position:relative; border:1px solid rgba(97,191,26,.35); border-radius:16px; padding:16px; box-shadow:var(--shadow); background:#f4f9ef; background: color-mix(in srgb, var(--green-400) 12%, var(--bg));}
+    html[data-theme="dark"] .intro-box{ border-color:rgba(97,191,26,.45); background: color-mix(in srgb, var(--green-400) 7%, var(--bg)); }
+    .intro-head{display:flex; gap:12px; align-items:flex-start; margin-bottom:10px}
+    .intro-ico{flex:0 0 auto; color:var(--green-600)}
+    .intro-text strong{display:block; margin-bottom:2px}
+
+    .searchbox{position:relative; margin-top:4px}
+    .searchbox input{width:100%; font-size:16px; padding:14px 44px 14px 44px; border:1px solid var(--input-border); border-radius:12px; background:var(--input-bg); color:var(--fg); box-shadow:0 6px 18px rgba(0,0,0,.06)}
+    .searchbox input:focus{outline:2px solid transparent; border-color:var(--green-400); box-shadow:0 0 0 3px rgba(97,191,26,.25)}
+    .searchbox .icon{position:absolute; left:12px; top:50%; transform:translateY(-50%); opacity:.9}
+    .searchbox .clear{position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; opacity:.8}
+    .suggestions{position:absolute; z-index:8; top: calc(100% + 6px); left:0; right:0; background:var(--card-bg); border:1px solid var(--card-border); border-radius:12px; box-shadow:var(--shadow); max-height:280px; overflow:auto; display:none}
+    .suggestions[aria-expanded="true"]{display:block}
+    .suggestions ul{margin:0; padding:6px; list-style:none}
+    .suggestions li{padding:10px 12px; border-radius:8px; cursor:pointer}
+    .suggestions li[aria-selected="true"], .suggestions li:hover{background:var(--chip-bg)}
+
+    .filters{display:flex; flex-direction:column; gap:10px; margin-top:8px}
+    .chip-row{display:flex; flex-wrap:wrap; gap:8px}
+    .chip{border:1px solid var(--card-border); background:var(--chip-bg); color:var(--chip-fg); padding:8px 12px; border-radius:999px; font-size:12px; cursor:pointer; user-select:none}
+    .chip[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:#0E2A0E; font-weight:700}
+
+    .grid{display:grid; grid-template-columns: repeat(1, minmax(0,1fr)); gap:16px}
+    @media(min-width:650px){.grid{grid-template-columns: repeat(2, minmax(0,1fr));}}
+    @media(min-width:980px){.grid{grid-template-columns: repeat(3, minmax(0,1fr));}}
+
+    .card{background:var(--card-bg); border:1px solid var(--card-border); border-radius:16px; padding:18px 40px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:12px;}
+    .card.inactivo{filter:grayscale(0.4); opacity:0.68}
+    .card-header{display:flex; align-items:center; justify-content:space-between; gap:12px}
+    .card-title{font-size:16px; font-weight:700; margin:0}
+    .badge{display:inline-flex; align-items:center; gap:6px; font-size:11px; padding:4px 8px; border-radius:999px; border:1px solid transparent;}
+    .badge.activo{background:rgba(97,191,26,.15); color:var(--green-400); border-color:rgba(97,191,26,.35)}
+    .badge.inactivo{background:#2b2b2b12; color:#888; border-color:#8883}
+
+    .meta{display:flex; flex-direction:column; gap:6px; font-size:12px; color:var(--muted)}
+    .meta-line{display:block}
+    .tags{display:flex; gap:6px; flex-wrap:wrap}
+    .tag{font-size:11px; padding:4px 8px; border-radius:999px; background:var(--chip-bg); color:var(--chip-fg); border:1px solid var(--card-border)}
+    .actions{display:flex; gap:8px; flex-wrap:wrap}
+    .btn{appearance:none; border:1px solid transparent; border-radius:14px; padding:10px 14px; font-weight:600; cursor:pointer; transition:transform .04s ease, box-shadow .2s ease, background .2s ease; box-shadow:0 2px 0 rgba(0,0,0,.08);}
+    .btn:hover{transform:translateY(-1px)}
+    .btn:active{transform:translateY(0)}
+    .btn-primary{background:#0c8c50; color:#fff; border-color:#0a804a}
+    .btn-primary:focus{outline:2px solid #fff; outline-offset:2px}
+    .btn-sm{font-size:12px; padding:8px 10px; border-radius:10px}
+    .btn-ghost{background:transparent; color:var(--fg); border:1px solid var(--input-border)}
+    .btn-ghost:hover{background:var(--chip-bg)}
+
+    footer{margin-top:12px; padding:16px 24px; font-size:12px; color:var(--muted)}
+
+    .footnote{background:var(--green-600); color:#fff;}
+    .footnote-inner{max-width:1280px; margin:0 auto; padding:10px 24px; font-size:12px; display:flex; align-items:center; justify-content:center; gap:8px;}
+
+    kbd{background:var(--kbd-bg); color:var(--kbd-fg); border-radius:6px; padding:2px 6px; border:1px solid var(--card-border); font-size:12px}
+    .empty{background:var(--card-bg); border:1px solid var(--card-border); border-radius:16px; padding:24px; text-align:center}
+    .suggested{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:10px}
+    .sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="brand" aria-label="Marca Promerica">
+        <div class="title-wrap">
+          <h1><span class="gradient-title">Catalogo Dashboards Promerica</span></h1>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="content" aria-live="polite">
+      <section>
+        <div class="intro-box" id="intro" role="region" aria-label="Búsqueda">
+          <div class="intro-head">
+            <div class="intro-ico" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm1 15h-2v-2h2Zm0-4h-2V7h2Z"/></svg>
+            </div>
+            <div class="intro-text" id="searchHelp">
+              <strong>¿Qué tipo de visualización necesita?</strong>
+            </div>
+          </div>
+          <div class="searchbox">
+            <svg class="icon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM9.5 14C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input id="searchInput" type="search" placeholder="Buscar por nombre, dominio o tag" aria-label="Buscar dashboards" aria-describedby="searchHelp" autocomplete="off" />
+            <button id="clearSearch" class="clear" aria-label="Limpiar búsqueda" title="Limpiar">
+              <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+            <div id="suggestions" class="suggestions" role="listbox" aria-expanded="false" aria-label="Sugerencias de búsqueda"><ul></ul></div>
+          </div>
+        </div>
+
+        <div class="filters" aria-label="Filtros">
+          <div class="chip-row" id="chipRow" role="group" aria-label="Dominios"></div>
+        </div>
+
+        <div id="grid" class="grid" role="grid" aria-label="Resultados"></div>
+        <div id="emptyState" class="empty" style="display:none">
+          <div style="font-weight:700; margin-bottom:6px">No encontramos una coincidencia</div>
+          <div>Pruebe con términos similares o use las sugerencias</div>
+          <div id="nearTerms" class="suggested" aria-label="Sugerencias cercanas"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="container">
+    Este catálogo es de uso interno del Banco Promerica. No comparta enlaces fuera de la organización.
+  </footer>
+
+  <div class="footnote" role="contentinfo" aria-label="Créditos">
+    <div class="footnote-inner">
+      <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm1 15h-2v-2h2Zm0-4h-2V7h2Z"/></svg>
+      <span>Desarrollado por <strong>Gerencia de Data y Analytics</strong></span>
+    </div>
+  </div>
+
+  <script>
+  const DASH_DATA = [
+    { id:"dash-HERAUT10", tipo:"Herramienta", nombre:"HERAUT10. Herramienta de perfilación - Visión 360 - Personas", dominio:"Productos y Experiencia Cliente", categoria:"Personas", descripcion:"Visión general del cliente a partir de los productos que tiene y su comportamiento, para entender su valor como cliente y apoyar decisiones comerciales.", url:"https://app.powerbi.com/groups/dad0b768-389d-4a03-861f-012a8b2667b8/reports/acbe1b6e-8d86-4210-a131-59d3fb9bc4ff?ctid=355a3609-bc80-4b34-aa61-638d080bd255&pbi_source=linkShare", owner:"Nancy", patrocinador:"Andrea Fabiola Cabezas Valverde", estado:"activo", tags:["visión 360","personas","perfilamiento","productos","comportamiento","valor del cliente","KPIs"], sensibilidad:"interno" },
+    { id:"dash-HERAUT13", tipo:"Herramienta", nombre:"HERAUT13. Herramienta de perfilación - Visión 360 - Empresas", dominio:"Banca Empresas", categoria:"Empresas", descripcion:"Visión general de cada cliente empresarial. Muestra productos, facturación, riesgo y potencial para priorizar acciones comerciales.", url:"https://app.powerbi.com/reportEmbed?reportId=ceb92b3b-ed20-467f-946b-f346a1186b50&autoAuth=true&ctid=355a3609-bc80-4b34-aa61-638d080bd255", owner:"Alcides", patrocinador:"María del Rocío Gómez Cárdenas", estado:"activo", tags:["empresas","visión 360","perfil","facturación","productos","riesgo","potencial"], sensibilidad:"interno" },
+    { id:"dash-HERAUT18", tipo:"Herramienta", nombre:"HERAUT18. Alertas Top Retiros Clientes Empresariales", dominio:"Banca Empresas", categoria:"Empresas", descripcion:"Monitorea retiros inusuales y variaciones de liquidez en clientes empresariales para actuar a tiempo y proteger la relación con la empresa.", url:"https://app.powerbi.com/groups/fb362940-81bc-42a7-bf7e-df33175706f8/reports/3c02b51f-d2c0-439c-8676-2e5631730818/021de6c5bce10ab1e535?experience=power-bi", owner:"Osvaldo", patrocinador:"Carlos Araya Valverde", estado:"activo", tags:["alertas","retiros","liquidez","anomalías","empresas","monitoreo","variaciones"], sensibilidad:"interno" },
+    { id:"dash-HERAUT35", tipo:"Herramienta", nombre:"HERAUT35. Herramienta de perfilación - Visión 360 - Arquetipos", dominio:"Productos y Experiencia Cliente", categoria:"Personas", descripcion:"Presenta perfiles tipo de clientes Personas con sus productos y comportamiento para segmentar mejor y orientar propuestas de valor.", url:"https://app.powerbi.com/groups/dad0b768-389d-4a03-861f-012a8b2667b8/reports/a4a56b18-fe3c-400d-b7eb-663294cc473b/ReportSectiondb2f5b71bbc605085763?experience=power-bi", owner:"Nancy", patrocinador:"Elliot Miguel Madrigal Corrales", estado:"activo", tags:["visión 360","planilla","planilleros","perfilamiento","productos","comportamiento","valor del cliente","KPIs"], sensibilidad:"interno" },
+    { id:"dash-HERAUT43", tipo:"Herramienta", nombre:"HERAUT43. Gestión Integral del Cliente - Enfoque Personalizado - Banca Personas", dominio:"Banca Personas", categoria:"Personas", descripcion:"Organiza la atención diaria del asesor. Recomienda la siguiente mejor acción y producto para cada cliente y facilita agenda y seguimiento.", url:"https://app.powerbi.com/groups/dad0b768-389d-4a03-861f-012a8b2667b8/reports/7405d7fd-a2a6-480a-9c69-f326d8f0f0af?ctid=355a3609-bc80-4b34-aa61-638d080bd255&pbi_source=linkShare", owner:"Nancy", patrocinador:"Eduardo Solano Brenes", estado:"activo", tags:["gestión cliente","personalizado","recomendador","next best action","next best product","agenda","seguimiento","CRM"], sensibilidad:"interno" },
+    { id:"dash-HERAUT44", tipo:"Herramienta", nombre:"HERAUT44. Gestión Integral del Cliente - Enfoque Campaña - Banca Personas", dominio:"Banca Personas", categoria:"Personas", descripcion:"Gestiona campañas de clientes. Asigna, da seguimiento y muestra resultados para mejorar la conversión y el aprendizaje de futuras campañas.", url:"https://app.powerbi.com/groups/dad0b768-389d-4a03-861f-012a8b2667b8/reports/7ed3e37d-a184-4c66-9a51-7fa32c1cd277/41baa2f0dada24935c1a?experience=power-bi", owner:"Nancy", patrocinador:"Eduardo Solano Brenes", estado:"activo", tags:["gestión cliente","campañas","flujo","seguimiento","resultados","asignación","CRM"], sensibilidad:"interno" },
+    { id:"dash-RPAUT007", tipo:"Reporte", nombre:"RPAUT007. STGB - Información BP Gerencia", dominio:"Banca Privada", categoria:"Privada", descripcion:"Resumen ejecutivo para la gerencia de Banca Privada. Reúne KPIs clave para decisiones rápidas y seguimiento estratégico.", url:"https://app.powerbi.com/groups/228e0f9c-6ed5-4e5f-a6b6-32228c894a1f/reports/3e11cceb-67b5-40d2-a576-cf941f4d5399/ReportSection58546c0b0695ad62ad8f?experience=power-bi", owner:"Monica", patrocinador:"Laura Vargas", estado:"activo", tags:["gerencia","banca privada","resumen","KPIs","decisiones","ejecutivo"], sensibilidad:"interno" },
+    { id:"dash-RPAUT009", tipo:"Reporte", nombre:"RPAUT009. Dashboard Análisis Captaciones", dominio:"Institucional", categoria:"Institucional", descripcion:"Analiza captaciones por plazo y tasa. Mide crecimiento y mezcla de productos para apoyar decisiones de portafolio.", url:"https://app.powerbi.com/groups/228e0f9c-6ed5-4e5f-a6b6-32228c894a1f/reports/3d7c2449-de02-4d99-b66b-b466556e55de/ReportSectioneeff1636f4f2bd18048e?experience=power-bi", owner:"Mónica", patrocinador:"Laura Vargas", estado:"activo", tags:["captaciones","depósitos","plazos","tasas","crecimiento","mix"], sensibilidad:"interno" },
+    { id:"dash-RPAUT047", tipo:"Reporte", nombre:"RPAUT047. Visión General Crédito Prendario", dominio:"Banca Personas", categoria:"Personas", descripcion:"Panorama de la cartera prendaria. Muestra colocación, riesgo y tendencias para una gestión oportuna.", url:"https://app.powerbi.com/reportEmbed?reportId=aa6c18db-c8b4-437e-a99e-76ec9a2cec67&autoAuth=true&ctid=355a3609-bc80-4b34-aa61-638d080bd255", owner:"Alcides", patrocinador:"Joylie Ramírez Chacón", estado:"activo", tags:["crédito prendario","resumen","cartera","riesgo","colocación"], sensibilidad:"interno" },
+    { id:"dash-RPAUT048", tipo:"Reporte", nombre:"RPAUT048. Visión General Crédito Hipotecario", dominio:"Banca Personas", categoria:"Personas", descripcion:"Panorama de la cartera hipotecaria. Integra colocación, mora y LTV para monitoreo de riesgo y crecimiento.", url:"https://app.powerbi.com/reportEmbed?reportId=a9689a00-961d-4262-86b5-b127ee5d0fac&autoAuth=true&ctid=355a3609-bc80-4b34-aa61-638d080bd255", owner:"Alcides", patrocinador:"Joylie Ramírez Chacón", estado:"activo", tags:["hipotecario","cartera","colocación","mora","LTV"], sensibilidad:"interno" },
+    { id:"dash-RPAUT063", tipo:"Reporte", nombre:"RPAUT063. Distribución por Cantidad de Productos", dominio:"Banca Personas", categoria:"Personas", descripcion:"Indica cuántos productos tiene cada cliente. Permite medir profundidad de relación y detectar oportunidades de venta cruzada.", url:"https://app.powerbi.com/groups/dad0b768-389d-4a03-861f-012a8b2667b8/reports/689fe9a5-f6ba-49c6-8c0a-5a96d0d99b52/f83b394482d0d8decd2b?experience=power-bi", owner:"Nancy", patrocinador:"Eduardo Solano Brenes", estado:"activo", tags:["cantidad de productos","distribución","profundidad","cross sell"], sensibilidad:"interno" },
+    { id:"dash-RPAUT067", tipo:"Reporte", nombre:"RPAUT067. Reporte de Clientes según Estado", dominio:"Productos y Experiencia Cliente", categoria:"Personas", descripcion:"Clasifica clientes por estado activo, inactivo o bloqueado. Facilita segmentaciones y define acciones por grupo.", url:"https://app.powerbi.com/groups/dad0b768-389d-4a03-861f-012a8b2667b8/reports/d6eac8a3-2d23-4aea-955e-58375c7eee22/db2afccaea72e9e8805d?experience=power-bi", owner:"Nancy", patrocinador:"Ana María Moscoso Doring", estado:"activo", tags:["clientes","estado","activo","inactivo","bloqueado","clasificación"], sensibilidad:"interno" },
+    { id:"dash-PROY66", tipo:"Proyecto", nombre:"PROY66. Clientes y Saldos Sistema Financiero", dominio:"Banca Personas", categoria:"Personas", descripcion:"Muestra saldos y movimientos por entidad y producto en el sistema financiero. Sirve para comparar y entender la posición de nuestros clientes.", url:"https://app.powerbi.com/groups/fb362940-81bc-42a7-bf7e-df33175706f8/reports/633ef338-7014-4a26-aae6-e72da54999c8/836dbcf6b81070a6c0c1?experience=power-bi", owner:"Osvaldo", patrocinador:"Gustavo Lobo", estado:"activo", tags:["Saldos","entidades","tarjetas","colones","dólares","sistema financiero"], sensibilidad:"interno" },
+    { id:"dash-PROY68-ingresos", tipo:"Proyecto", nombre:"PROY68. Ingresos a Dashboard Equipo de Análisis de Datos", dominio:"Riesgos y Datos", categoria:"Datos", descripcion:"Controla accesos y uso de los dashboards del equipo. Ayuda a priorizar mejoras y depurar tableros con poco uso.", url:"https://app.powerbi.com/groups/fb362940-81bc-42a7-bf7e-df33175706f8/reports/78676649-c9d1-41a2-be6c-e4aee79978ae/e452d506d055bc6618f5?experience=power-bi", owner:"Osvaldo", patrocinador:"Roberto Valerio", estado:"activo", tags:["Consultas","dashboard","tableros","publicados","ingresos"], sensibilidad:"interno" },
+    { id:"dash-PROY68-migracion", tipo:"Proyecto", nombre:"PROY68. Control Migración Power BI", dominio:"Riesgos y Datos", categoria:"Datos", descripcion:"Da seguimiento al avance de la migración a Power BI. Reúne registros y tareas para coordinar al equipo y resolver bloqueos.", url:"https://app.powerbi.com/groups/fb362940-81bc-42a7-bf7e-df33175706f8/reports/78676649-c9d1-41a2-be6c-e4aee79978ae/e452d506d055bc6618f5?experience=power-bi", owner:"Osvaldo", patrocinador:"Roberto Valerio", estado:"activo", tags:["Dashboard","equipo","análisis","registros","migración"], sensibilidad:"interno" },
+    { id:"dash-PROY60", tipo:"Proyecto", nombre:"PROY60. Control STAGE_TCG (LISTENERHUB)", dominio:"Riesgos y Datos", categoria:"Datos", descripcion:"Monitorea calidad y actualización de cargas en producción. Ayuda a detectar fallos y asegurar la disponibilidad de datos.", url:"https://app.powerbi.com/groups/fb362940-81bc-42a7-bf7e-df33175706f8/reports/9e20bf42-f396-4c86-9caa-c16f134724e4/8f98ed08d24dcd202507?experience=power-bi", owner:"Osvaldo", patrocinador:"Gustavo Lobo", estado:"activo", tags:["calidad","registros","actualización","cargas","producción","listenerhub"], sensibilidad:"interno" },
+    { id:"dash-MOD12", tipo:"Modelo", nombre:"MOD12. Modelo Alta Aceptación XF", dominio:"Banca Personas", categoria:"Personas", descripcion:"Presenta resultados del modelo de alta aceptación. Ayuda a identificar clientes con mayor probabilidad de aceptar una oferta y a priorizar esfuerzos.", url:"https://app.powerbi.com/groups/fb362940-81bc-42a7-bf7e-df33175706f8/reports/de030a0a-b2d8-443d-a5f4-91cf15c454b3/21f71690d1aa8a926065?experience=power-bi", owner:"Osvaldo", patrocinador:"Eduardo Solano", estado:"activo", tags:["Compra saldos","transacciones","facturación","tarjetas crédito","productos","clientes"], sensibilidad:"interno" },
+    { id:"dash-MOD71", tipo:"Modelo", nombre:"MOD71. Modelo de Geolocalización de Surcursales", dominio:"Banca Personas", categoria:"Personas", descripcion:"Mapa de sucursales y clientes por ubicación. Permite decidir zonas de atención y oportunidades de expansión.", url:"https://app.powerbi.com/groups/fb362940-81bc-42a7-bf7e-df33175706f8/reports/ea388a03-1c31-49ab-9238-dd97cd9ae084/ab306525e25dd0859b08?experience=power-bi", owner:"Osvaldo", patrocinador:"Moises Alvares Navarro", estado:"activo", tags:["Latitud","longitud","sucursal","cliente","ubicación","cantón","distrito","provincia"], sensibilidad:"interno" },
+    { id:"dash-TRANS06", tipo:"Consolidado", nombre:"TRANS06. Consolidado Control Cargas", dominio:"Riesgos y Datos", categoria:"Datos", descripcion:"Consolida el estado de cargas y fechas de actualización. Permite detectar atrasos y activar alertas de forma centralizada.", url:"https://app.powerbi.com/groups/fb362940-81bc-42a7-bf7e-df33175706f8/reports/736c2e2f-3e6e-458b-a12c-04a4bd063ff6/6149779c883190d76c5a?experience=power-bi", owner:"Osvaldo", patrocinador:"Roberto Valerio", estado:"activo", tags:["Registros","cargas","fechas actualización","alertas","tablas","registros"], sensibilidad:"interno" }
+  ];
+
+  const DOMAINS = ["Productos y Experiencia Cliente","Banca Empresas","Banca Personas","Banca Privada","Institucional","Riesgos y Datos","Finanzas y Operaciones"];
+
+  const SYNONYMS = { dashboard:["dash","tablero","panel"], orquestador:["orquestrador","orchestrator"], "master analytics":["mast analitics","master analitics","master analitycs"], promerica:["banco promerica","el banco"] };
+  const CORRECTIONS = { analitics:"analytics", aceder:"acceder", dashboar:"dashboard" };
+
+  const LS_KEYS = { q:"catdash.q", cat:"catdash.cat" };
+  const state = { q:"", category:"", onlyActive:true, detected:[] };
+
+  const normalizeText = (s)=> (s||"").toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/\s+/g,' ');
+  function levenshtein(a,b){ a=normalizeText(a); b=normalizeText(b); const m=a.length,n=b.length; if(m===0) return n; if(n===0) return m; const dp=new Array(n+1); for(let j=0;j<=n;j++) dp[j]=j; for(let i=1;i<=m;i++){ let prev=i-1; dp[0]=i; for(let j=1;j<=n;j++){ const tmp=dp[j]; const cost=a[i-1]===b[j-1]?0:1; dp[j]=Math.min(dp[j]+1, dp[j-1]+1, prev+cost); prev=tmp; } } return dp[n]; }
+  function expandSynonyms(tokens){ const expanded=new Set(tokens); for(const [key,vals] of Object.entries(SYNONYMS)){ const all=[key,...vals].map(normalizeText); for(const t of tokens){ if(all.some(x=> x.includes(t)||t.includes(x))){ all.forEach(x=>expanded.add(x)); } } } return Array.from(expanded); }
+  const INDEX = (()=>{ const set=new Set(); for(const d of DASH_DATA){ [d.nombre,(d.dominio||d.categoria),(d.patrocinador||d.owner),...((d.tags||[]).filter(t=> normalizeText(t)!=='power bi'))].forEach(v=>{ normalizeText(String(v)).split(/\s+/).forEach(t=>{ if(t&&t.length>1) set.add(t); }); }); } Object.keys(SYNONYMS).forEach(k=>{ normalizeText(k).split(/\s+/).forEach(t=>{ if(t.length>1) set.add(t); }); SYNONYMS[k].forEach(v=> normalizeText(v).split(/\s+/).forEach(t=>{ if(t.length>1) set.add(t); })); }); return Array.from(set); })();
+  function applyCorrections(q){ return normalizeText(q).split(' ').map(p=> CORRECTIONS[p]||p).join(' '); }
+  function tokenize(q){ return normalizeText(q).split(' ').filter(t=>t); }
+  function scoreItem(item,tokens){ if(tokens.length===0) return {score:0,reason:[]}; const fields={ nombre:normalizeText(item.nombre), desc:normalizeText(item.descripcion), cat:normalizeText(item.dominio||item.categoria), tags:(item.tags||[]).map(normalizeText)}; let score=0; const reason=[]; for(const t of tokens){ if(fields.nombre.includes(t)){score+=5;reason.push('n:'+t);} if(fields.desc.includes(t)){score+=2;reason.push('d:'+t);} if(fields.cat.includes(t)){score+=3;reason.push('c:'+t);} if(fields.tags.some(x=>x.includes(t))){score+=3;reason.push('g:'+t);} if(fields.nombre.split(' ').some(w=>w.startsWith(t))) score+=2; if(fields.tags.some(x=> x.split(' ').some(w=>w.startsWith(t)))) score+=1; const th=Math.max(1,Math.floor(t.length*0.25)); const near=[fields.nombre,fields.desc,fields.cat,...fields.tags].some(v=> levenshtein(t,v)<=th); if(near){score+=1;reason.push('~:'+t);} } return {score,reason}; }
+  function persist(){ try{ localStorage.setItem(LS_KEYS.q,state.q); localStorage.setItem(LS_KEYS.cat,state.category);}catch(e){} }
+  function restore(){ try{ state.q=localStorage.getItem(LS_KEYS.q)||''; state.category=localStorage.getItem(LS_KEYS.cat)||''; }catch(e){} state.onlyActive=true; if(state.category && !DOMAINS.includes(state.category)) state.category=''; }
+  function buildChips(){ const chipRow=document.getElementById('chipRow'); chipRow.innerHTML=''; const cats=DOMAINS.slice(); const all=['Todos',...cats]; all.forEach(cat=>{ const btn=document.createElement('button'); btn.className='chip'; const value=cat==='Todos'?'' : cat; btn.setAttribute('aria-pressed', state.category===value?'true':'false'); btn.textContent=cat; btn.addEventListener('click',()=>{ state.category=value; [...chipRow.children].forEach(c=> c.setAttribute('aria-pressed','false')); btn.setAttribute('aria-pressed','true'); persist(); render(); }); chipRow.appendChild(btn); }); }
+  function buildSuggestions(q){ const qn=normalizeText(q); const sugBox=document.getElementById('suggestions'); const sugList=sugBox.querySelector('ul'); if(!qn){ sugBox.setAttribute('aria-expanded','false'); sugList.innerHTML=''; return;} const parts=tokenize(qn); const candidates=new Set(); INDEX.forEach(tok=>{ if(parts.some(p=> tok.startsWith(p)||p.startsWith(tok)|| levenshtein(p,tok)<=Math.max(1,Math.floor(p.length*0.25)))) candidates.add(tok); }); const arr=Array.from(candidates).slice(0,12); sugList.innerHTML=arr.map((t,i)=> `<li role=\"option\" data-i=\"${i}\">${t}</li>`).join(''); sugBox.setAttribute('aria-expanded', arr.length>0?'true':'false'); }
+  function buildNearTerms(parts){ const near=[]; const sugBox=document.getElementById('nearTerms'); for(const p of parts){ let best=INDEX.map(tok=>({tok,d:levenshtein(p,tok)})).sort((a,b)=>a.d-b.d).slice(0,2).map(x=>x.tok); near.push(...best);} const uniq=Array.from(new Set(near)).slice(0,3); sugBox.innerHTML=''; uniq.forEach(t=>{ const b=document.createElement('button'); b.className='chip'; b.textContent=t; b.addEventListener('click',()=>{ document.getElementById('searchInput').value=t; state.q=t; persist(); render(); }); sugBox.appendChild(b); }); }
+
+  const searchInput=document.getElementById('searchInput'); const clearBtn=document.getElementById('clearSearch');
+  clearBtn.addEventListener('click',()=>{ searchInput.value=''; state.q=''; persist(); render(); buildSuggestions(''); searchInput.focus(); });
+  searchInput.addEventListener('input',(e)=>{ state.q=e.target.value; persist(); render(); buildSuggestions(state.q); });
+  const sugList=document.getElementById('suggestions').querySelector('ul');
+  sugList.addEventListener('click',(e)=>{ const li=e.target.closest('li'); if(!li) return; const val=li.textContent; searchInput.value=val; state.q=val; persist(); render(); buildSuggestions(''); });
+
+  function render(){ const qApplied=applyCorrections(state.q); const tokensBase=tokenize(qApplied); const tokens=expandSynonyms(tokensBase); let list=DASH_DATA.slice(); if(state.category){ list=list.filter(d=> (d.dominio||d.categoria)===state.category); } if(state.onlyActive){ list=list.filter(d=> d.estado==='activo'); } let scored=list.map(it=>({item:it,...scoreItem(it,tokens)})); if(tokens.length>0){ scored=scored.filter(x=> x.score>0); }
+    scored.sort((a,b)=> a.item.nombre.localeCompare(b.item.nombre));
+    const grid=document.getElementById('grid'); grid.innerHTML=''; if(scored.length===0){ document.getElementById('emptyState').style.display='block'; buildNearTerms(tokensBase); } else { document.getElementById('emptyState').style.display='none'; }
+    scored.forEach(({item})=>{ const card=document.createElement('div'); card.className='card'+(item.estado==='inactivo'?' inactivo':'');
+      const head=document.createElement('div'); head.className='card-header';
+      const h=document.createElement('h3'); h.className='card-title'; h.textContent=item.nombre; head.appendChild(h);
+      const pill=document.createElement('span'); pill.className='badge '+(item.estado==='activo'?'activo':'inactivo'); pill.innerHTML=statePillHTML(item.estado); head.appendChild(pill);
+      card.appendChild(head);
+      const desc=document.createElement('div'); desc.textContent=item.descripcion; card.appendChild(desc);
+      const meta=document.createElement('div'); meta.className='meta';
+      const m1=document.createElement('span'); m1.className='meta-line'; m1.textContent='📁 Dominio: '+(item.dominio||item.categoria);
+      const m2=document.createElement('span'); m2.className='meta-line'; m2.textContent='👤 Patrocinador: '+(item.patrocinador||'N/A');
+      meta.appendChild(m1); meta.appendChild(m2); card.appendChild(meta);
+      const tags=document.createElement('div'); tags.className='tags'; ((item.tags||[]).filter(t=> normalizeText(t)!=='power bi')).forEach(t=>{ const s=document.createElement('span'); s.className='tag'; s.textContent=t; tags.appendChild(s); }); card.appendChild(tags);
+      const actions=document.createElement('div'); actions.className='actions';
+      const aOpen=document.createElement('a'); aOpen.className='btn btn-primary btn-sm'; aOpen.href=item.url; aOpen.target='_blank'; aOpen.rel='noopener'; aOpen.innerHTML=svgOpen()+' Abrir dashboard';
+      const bCopy=document.createElement('button'); bCopy.className='btn btn-ghost btn-sm'; bCopy.innerHTML=svgLink()+' Copiar enlace'; bCopy.addEventListener('click',()=>copyText(item.url,'Enlace copiado'));
+      const bFicha=document.createElement('button'); bFicha.className='btn btn-ghost btn-sm'; bFicha.innerHTML=svgCopy()+' Copiar ficha'; bFicha.addEventListener('click',()=>{ const ficha=`Nombre: ${item.nombre}\nDescripción: ${item.descripcion}\nDominio: ${item.dominio||item.categoria}\nPatrocinador: ${item.patrocinador||'N/A'}\nURL: ${item.url}\nEstado: ${item.estado}`; copyText(ficha,'Ficha copiada'); });
+      actions.append(aOpen,bCopy,bFicha); card.appendChild(actions);
+      if(item.estado==='inactivo'){ const paused=document.createElement('div'); paused.className='meta'; paused.innerHTML='<span title="Inactivo">'+svgPause()+' Inactivo</span>'; card.appendChild(paused); }
+      grid.appendChild(card); }); }
+
+  function statePillHTML(est){ const label=est==='activo'?'Activo':'Inactivo'; return `<svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" style=\"vertical-align:middle\"><circle cx=\"12\" cy=\"12\" r=\"10\" fill=\"${est==='activo'?'#61BF1A':'#9E9E9E'}\"/></svg> ${label}`; }
+  function svgOpen(){ return '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3z"/></svg>'; }
+  function svgLink(){ return '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3.9 12a5 5 0 0 1 5-5h3v2h-3a3 3 0 1 0 0 6h3v2h-3a5 5 0 0 0 0-10z"/></svg>'; }
+  function svgCopy(){ return '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16 1H4a2 2 0 0 0-2 2v12h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg>'; }
+  function svgPause(){ return '<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>'; }
+  function copyText(text,notify){ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(()=> toast(notify)).catch(()=> fallbackCopy(text,notify)); } else { fallbackCopy(text,notify);} }
+  function fallbackCopy(text,notify){ const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); toast(notify);}catch(e){} document.body.removeChild(ta);} 
+  function toast(msg){ const t=document.createElement('div'); t.textContent=msg; t.style.position='fixed'; t.style.bottom='18px'; t.style.left='50%'; t.style.transform='translateX(-50%)'; t.style.background='var(--green-600)'; t.style.color='#fff'; t.style.padding='8px 12px'; t.style.borderRadius='10px'; t.style.boxShadow='var(--shadow)'; t.style.zIndex=60; document.body.appendChild(t); setTimeout(()=>{ t.remove(); }, 1400); }
+
+  function boot(){ restore(); buildChips(); render(); }
+  document.addEventListener('DOMContentLoaded', boot);
+  </script>
+</body>
+</html>
