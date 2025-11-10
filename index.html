@@ -1,303 +1,344 @@
-<!doctype html>
-<html lang="es" data-theme="light">
+<!DOCTYPE html>
+<html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Catálogo Dashboards Promerica</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <style>
-    :root{
-      --green-600:#006338; --green-400:#61BF1A; --gray-500:#A6A6A6; --blue-800:#003E89; --teal-400:#69C7C7; --red-700:#A20000; --orange-600:#C35A00; --lime-500:#B9C301; --bg:#FFFFFF; --fg:#000000; --accent:#61BF1A;
-      --card-bg:#FFFFFF; --card-border:#E6E6E6; --muted:#5A5A5A; --chip-bg:#F5F5F5; --chip-fg:#222; --shadow:0 8px 24px rgba(0,0,0,.08);
-      --kbd-bg:#F2F2F2; --kbd-fg:#111; --input-bg:#FFFFFF; --input-border:#DADADA;
-    }
-    @media (prefers-color-scheme: dark){
-      html[data-theme="dark"]:root{
-        --bg:#0B0F0C; --fg:#F2F2F2; --card-bg:#111511; --card-border:#1F291F; --muted:#B7B7B7; --chip-bg:#1A231B; --chip-fg:#EDEDED; --shadow:0 12px 28px rgba(0,0,0,.45); --kbd-bg:#1E1E1E; --kbd-fg:#EDEDED; --input-bg:#121712; --input-border:#2A2F2A;
-      }
-    }
-    html,body{height:100%}
-    body{margin:0; font-family: Montserrat, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:var(--bg); color:var(--fg); line-height:1.35;}
-    .container{max-width:1280px; margin:0 auto; padding:24px;}
-
-    header{background:var(--green-600); color:#fff;}
-    .header-inner{display:flex; align-items:center; justify-content:space-between; gap:16px; padding:18px 24px;}
-    .brand{display:flex; align-items:center; gap:12px;}
-    .title-wrap{display:flex; flex-direction:column}
-    h1{margin:0; font-size: clamp(22px, 3.2vw, 32px); font-weight:700; line-height:1.1;}
-    .gradient-title{background:linear-gradient(90deg, var(--green-400), var(--lime-500)); -webkit-background-clip:text; background-clip:text; color:transparent;}
-
-    .content{display:grid; grid-template-columns: 1fr; gap:24px;}
-
-    .intro-box{position:relative; border:1px solid rgba(97,191,26,.35); border-radius:16px; padding:16px; box-shadow:var(--shadow); background:#f4f9ef; background: color-mix(in srgb, var(--green-400) 12%, var(--bg));}
-    html[data-theme="dark"] .intro-box{ border-color:rgba(97,191,26,.45); background: color-mix(in srgb, var(--green-400) 7%, var(--bg)); }
-    .intro-head{display:flex; gap:12px; align-items:flex-start; margin-bottom:10px}
-    .intro-ico{flex:0 0 auto; color:var(--green-600)}
-    .intro-text strong{display:block; margin-bottom:2px}
-
-    .searchbox{position:relative; margin-top:4px}
-    .searchbox input{width:100%; font-size:16px; padding:14px 44px 14px 44px; border:1px solid var(--input-border); border-radius:12px; background:var(--input-bg); color:var(--fg); box-shadow:0 6px 18px rgba(0,0,0,.06)}
-    .searchbox input:focus{outline:2px solid transparent; border-color:var(--green-400); box-shadow:0 0 0 3px rgba(97,191,26,.25)}
-    .searchbox .icon{position:absolute; left:12px; top:50%; transform:translateY(-50%); opacity:.9}
-    .searchbox .clear{position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; opacity:.8}
-    .suggestions{position:absolute; z-index:8; top: calc(100% + 6px); left:0; right:0; background:var(--card-bg); border:1px solid var(--card-border); border-radius:12px; box-shadow:var(--shadow); max-height:280px; overflow:auto; display:none}
-    .suggestions[aria-expanded="true"]{display:block}
-    .suggestions ul{margin:0; padding:6px; list-style:none}
-    .suggestions li{padding:10px 12px; border-radius:8px; cursor:pointer}
-    .suggestions li[aria-selected="true"], .suggestions li:hover{background:var(--chip-bg)}
-
-    .filters{display:flex; flex-direction:column; gap:10px; margin-top:8px}
-    .chip-row{display:flex; flex-wrap:wrap; gap:8px}
-    .chip{border:1px solid var(--card-border); background:var(--chip-bg); color:var(--chip-fg); padding:8px 12px; border-radius:999px; font-size:12px; cursor:pointer; user-select:none}
-    .chip[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:#0E2A0E; font-weight:700}
-
-    .grid{display:grid; grid-template-columns: repeat(1, minmax(0,1fr)); gap:16px}
-    @media(min-width:650px){.grid{grid-template-columns: repeat(2, minmax(0,1fr));}}
-    @media(min-width:980px){.grid{grid-template-columns: repeat(3, minmax(0,1fr));}}
-
-    .card{background:var(--card-bg); border:1px solid var(--card-border); border-radius:16px; padding:18px 40px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:12px;}
-    .card.inactivo{filter:grayscale(0.4); opacity:0.68}
-    .card-header{display:flex; align-items:center; justify-content:space-between; gap:12px}
-    .card-title{font-size:16px; font-weight:700; margin:0}
-    .badge{display:inline-flex; align-items:center; gap:6px; font-size:11px; padding:4px 8px; border-radius:999px; border:1px solid transparent;}
-    .badge.activo{background:rgba(97,191,26,.15); color:var(--green-400); border-color:rgba(97,191,26,.35)}
-    .badge.inactivo{background:#2b2b2b12; color:#888; border-color:#8883}
-
-    .meta{display:flex; flex-direction:column; gap:6px; font-size:12px; color:var(--muted)}
-    .meta-line{display:block}
-    .tags{display:flex; gap:6px; flex-wrap:wrap}
-    .tag{font-size:11px; padding:4px 8px; border-radius:999px; background:var(--chip-bg); color:var(--chip-fg); border:1px solid var(--card-border)}
-    .actions{display:flex; gap:8px; flex-wrap:wrap}
-    .btn{appearance:none; border:1px solid transparent; border-radius:14px; padding:10px 14px; font-weight:600; cursor:pointer; transition:transform .04s ease, box-shadow .2s ease, background .2s ease; box-shadow:0 2px 0 rgba(0,0,0,.08);}
-    .btn:hover{transform:translateY(-1px)}
-    .btn:active{transform:translateY(0)}
-    .btn-primary{background:#0c8c50; color:#fff; border-color:#0a804a}
-    .btn-primary:focus{outline:2px solid #fff; outline-offset:2px}
-    .btn-sm{font-size:12px; padding:8px 10px; border-radius:10px}
-    .btn-ghost{background:transparent; color:var(--fg); border:1px solid var(--input-border)}
-    .btn-ghost:hover{background:var(--chip-bg)}
-
-    footer{margin-top:12px; padding:16px 24px; font-size:12px; color:var(--muted)}
-
-    .footnote{background:var(--green-600); color:#fff;}
-    .footnote-inner{max-width:1280px; margin:0 auto; padding:10px 24px; font-size:12px; display:flex; align-items:center; justify-content:center; gap:8px;}
-
-    kbd{background:var(--kbd-bg); color:var(--kbd-fg); border-radius:6px; padding:2px 6px; border:1px solid var(--card-border); font-size:12px}
-    .empty{background:var(--card-bg); border:1px solid var(--card-border); border-radius:16px; padding:24px; text-align:center}
-    .suggested{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:10px}
-    .sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0}
-
-    .loader{display:none; font-size:12px; color:var(--muted)}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Productos de Datos - Banco Promerica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilos para una transición suave en el modal */
+        #dashboard-modal {
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        #dashboard-modal .modal-content {
+            transition: transform 0.3s ease-in-out;
+        }
+        .modal-hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .modal-hidden .modal-content {
+            transform: scale(0.95);
+        }
+    </style>
 </head>
-<body>
-  <header>
-    <div class="header-inner">
-      <div class="brand" aria-label="Marca Promerica">
-        <div class="title-wrap">
-          <h1><span class="gradient-title">Catálogo Dashboards Promerica</span></h1>
-          <small class="loader" id="loader">Cargando catálogos desde Excel…</small>
+<body class="bg-gray-50 dark:bg-gray-950 font-sans text-gray-900 dark:text-gray-100">
+
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-900 shadow-sm sticky top-0 z-40">
+        <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center gap-3">
+                     <svg class="h-8 w-auto text-green-600" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 6C14.0589 6 6 14.0589 6 24C6 33.9411 14.0589 42 24 42C33.9411 42 42 33.9411 42 24C42 14.0589 33.9411 6 24 6Z" stroke="currentColor" strokeWidth="4" strokeLinejoin="round"/><path d="M16 24L22 30L34 18" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    <h1 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">
+                        Catálogo de Productos de Datos <span class="text-green-600">- Banco Promerica</span>
+                    </h1>
+                </div>
+            </div>
         </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="max-w-screen-xl mx-auto p-4 sm:p-6 lg:p-8">
+        <!-- Barra de búsqueda y filtros -->
+        <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-lg mb-8">
+            <div class="relative mb-4">
+                <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </div>
+                <input
+                    type="text"
+                    id="search-input"
+                    placeholder="Buscar por nombre, descripción o tag..."
+                    class="w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+                />
+            </div>
+            <div class="flex items-center justify-between mb-3">
+                 <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Filtrar por Dominio</h3>
+                 <button id="clear-filters-btn" class="text-sm text-green-600 dark:text-green-400 hover:underline">Limpiar selección</button>
+            </div>
+            <div id="domain-filters" class="flex flex-wrap gap-2">
+                <!-- Los botones de filtro se insertarán aquí -->
+            </div>
+        </div>
+
+        <!-- Grid de Dashboards -->
         <div>
-          <label for="fileInput" class="sr-only">Cargar Excel</label>
-          <input id="fileInput" type="file" accept=".xlsx,.xls" />
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <main class="container">
-    <div class="content" aria-live="polite">
-      <section>
-        <div class="intro-box" id="intro" role="region" aria-label="Búsqueda">
-          <div class="intro-head">
-            <div class="intro-ico" aria-hidden="true">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm1 15h-2v-2h2Zm0-4h-2V7h2Z"/></svg>
+            <p id="results-count" class="text-sm text-gray-500 dark:text-gray-400 mb-6"></p>
+            <div id="dashboard-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <!-- Las tarjetas de dashboard se insertarán aquí -->
             </div>
-            <div class="intro-text" id="searchHelp">
-              <strong>¿Qué tipo de visualización necesita?</strong>
-              <span>Los datos se cargan desde un Excel (solo registros <em>Activos</em>).</span>
+             <div id="no-results" class="hidden text-center py-16 px-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold">No se encontraron resultados</h3>
+                <p class="text-gray-500 dark:text-gray-400 mt-2">Intenta ajustar tu búsqueda o limpiar los filtros.</p>
             </div>
-          </div>
-          <div class="searchbox">
-            <svg class="icon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM9.5 14C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-            <input id="searchInput" type="search" placeholder="Buscar por nombre, dominio o tag" aria-label="Buscar dashboards" aria-describedby="searchHelp" autocomplete="off" />
-            <button id="clearSearch" class="clear" aria-label="Limpiar búsqueda" title="Limpiar">
-              <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-            </button>
-            <div id="suggestions" class="suggestions" role="listbox" aria-expanded="false" aria-label="Sugerencias de búsqueda"><ul></ul></div>
-          </div>
         </div>
-
-        <div class="filters" aria-label="Filtros">
-          <div class="chip-row" id="chipRow" role="group" aria-label="Dominios"></div>
+    </main>
+    
+    <!-- Modal -->
+    <div id="dashboard-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 modal-hidden">
+        <div class="modal-content bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <!-- El contenido del modal se insertará aquí -->
         </div>
-
-        <div id="grid" class="grid" role="grid" aria-label="Resultados"></div>
-        <div id="emptyState" class="empty" style="display:none">
-          <div style="font-weight:700; margin-bottom:6px">No encontramos una coincidencia</div>
-          <div>Pruebe con términos similares o use las sugerencias</div>
-          <div id="nearTerms" class="suggested" aria-label="Sugerencias cercanas"></div>
-        </div>
-      </section>
     </div>
-  </main>
 
-  <footer class="container">
-    Este catálogo es de uso interno del Banco Promerica. No comparta enlaces fuera de la organización.
-  </footer>
 
-  <div class="footnote" role="contentinfo" aria-label="Créditos">
-    <div class="footnote-inner">
-      <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm1 15h-2v-2h2Zm0-4h-2V7h2Z"/></svg>
-      <span>Desarrollado por <strong>Gerencia de Data y Analytics</strong></span>
-    </div>
-  </div>
+    <script>
+        // --- DATOS (Simulando una fuente de datos externa) ---
+        const DASH_DATA = [
+            { id:"dash-HERAUT10", tipo:"Herramienta", nombre:"HERAUT10. Herramienta de perfilación - Visión 360 - Personas", dominio:"Productos y Experiencia Cliente", categoria:"Clientes", descripcion:"Visión 360 de personas para perfilamiento, productos y comportamiento con foco en valor del cliente y kpis.", url:"https://app.powerbi.com/groups/dad0b768-389d-4a03-861f-012a8b2667b8/reports/acbe1b6e-8d86-4210-a131-59d3fb9bc4ff/ReportSectiondb2f5b71bbc605085763?experience=power-bi", owner:"Estefanía Villalobos Monge", patrocinador:"Andrea Fabiola Cabezas Valverde", estado:"activo", tags:["visión 360","personas","perfilamiento","productos","comportamiento","valor del cliente","kpis"], sensibilidad:"interno" },
+            { id:"dash-HERAUT13", tipo:"Herramienta", nombre:"HERAUT13. Herramienta de perfilación - Visión 360 - Empresas", dominio:"Banca Empresas", categoria:"Empresas", descripcion:"Visión 360 de empresas con perfil, facturación, productos, riesgo y potencial para priorizar decisiones.", url:"https://app.powerbi.com/reportEmbed?reportId=ceb92b3b-ed20-467f-946b-f346a1186b50&autoAuth=true&ctid=355a3609-bc80-4b34-aa61-638d080bd255", owner:"Alcides Alejandro Arroyo Arroyo", patrocinador:"María del Rocío Gómez Cárdenas", estado:"activo", tags:["empresas","visión 360","perfil","facturación","productos","riesgo","potencial"], sensibilidad:"interno" },
+            { id:"dash-HERAUT35", tipo:"Herramienta", nombre:"HERAUT35. Herramienta de perfilación - Visión 360 - Arquetipos", dominio:"Productos y Experiencia Cliente", categoria:"Clientes", descripcion:"Visión 360 para planilla y planilleros con perfilamiento de productos y comportamiento orientado a valor del cliente y kpis.", url:"https://app.powerbi.com/groups/dad0b768-389d-4a03-861f-012a8b2667b8/reports/a4a56b18-fe3c-400d-b7eb-663294cc473b/ReportSectiondb2f5b71bbc605085763?experience=power-bi", owner:"Estefanía Villalobos Monge", patrocinador:"Elliot Miguel Madrigal Corrales", estado:"activo", tags:["visión 360","planilla","planilleros","perfilamiento","productos","comportamiento","valor del cliente","kpis"], sensibilidad:"interno" },
+            { id:"dash-HERAUT43", tipo:"Herramienta", nombre:"HERAUT43. Gestión Integral del Cliente - Enfoque Personalizado - Banca Personas", dominio:"Banca Personas", categoria:"Personas", descripcion:"Gestión de cliente personalizada con recomendador, next best action y next best product, agenda y seguimiento en crm.", url:"https://app.powerbi.com/groups/dad0b768-389d-4a03-861f-012a8b2667b8/reports/7405d7fd-a2a6-480a-9c69-f326d8f0f0af?ctid=355a3609-bc80-4b34-aa61-638d080bd255&pbi_source=linkShare", owner:"Estefanía Villalobos Monge", patrocinador:"Eduardo Solano Brenes", estado:"activo", tags:["gestión cliente","personalizado","recomendador","next best action","next best product","agenda","seguimiento","crm"], sensibilidad:"interno" },
+            { id:"dash-HERAUT44", tipo:"Herramienta", nombre:"HERAUT44. Gestión Integral del Cliente - Enfoque Campaña - Banca Personas", dominio:"Banca Personas", categoria:"Personas", descripcion:"Gestión de cliente para campañas con flujo, seguimiento, resultados y asignación en crm.", url:"https://app.powerbi.com/groups/dad0b768-389d-4a03-861f-012a8b2667b8/reports/7ed3e37d-a184-4c66-9a51-7fa32c1cd277/41baa2f0dada24935c1a?experience=power-bi", owner:"Estefanía Villalobos Monge", patrocinador:"Eduardo Solano Brenes", estado:"activo", tags:["gestión cliente","campañas","flujo","seguimiento","resultados","asignación","crm"], sensibilidad:"interno" },
+            { id:"dash-HERAUT45", tipo:"Herramienta", nombre:"HERAUT45. Gestión Integral del Cliente - Enfoque Campaña - Banca Privada", dominio:"Banca Privada", categoria:"Privada", descripcion:"Campañas para banca privada con tracking, conversión y oportunidades dentro de crm.", url:"https://app.powerbi.com/links/wb-mA2yb7G?ctid=355a3609-bc80-4b34-aa61-638d080bd255&pbi_source=linkShare", owner:"Monica Hernandez Brenes", patrocinador:"Laura Vargas", estado:"activo", tags:["gestión cliente","campaña","banca privada","tracking","conversión","crm","oportunidades"], sensibilidad:"interno" },
+            { id:"dash-HERAUT46", tipo:"Herramienta", nombre:"HERAUT46. Gestión Integral del Cliente - Enfoque Personalizado - Banca Privada", dominio:"Banca Privada", categoria:"Privada", descripcion:"Asesoría personalizada para banca privada con oportunidades, agenda y relacionamiento.", url:"https://app.powerbi.com/links/Av7SDFwNNH?ctid=355a3609-bc80-4b34-aa61-638d080bd255&pbi_source=linkShare", owner:"Monica Hernandez Brenes", patrocinador:"Laura Vargas", estado:"activo", tags:["gestión cliente","personalizado","banca privada","oportunidades","agenda","relacionamiento"], sensibilidad:"interno" },
+            { id:"dash-RPAUT007", tipo:"Reporte", nombre:"RPAUT007. STGB - Información BP Gerencia", dominio:"Banca Privada", categoria:"Privada", descripcion:"Resumen para gerencia de banca privada con kpis clave para decisiones ejecutivas.", url:"https://app.powerbi.com/groups/228e0f9c-6ed5-4e5f-a6b6-32228c894a1f/reports/3e11cceb-67b5-40d2-a576-cf941f4d5399/ReportSection58546c0b0695ad62ad8f?experience=power-bi", owner:"Monica Hernandez Brenes", patrocinador:"Laura Vargas", estado:"activo", tags:["gerencia","banca privada","resumen","kpis","decisiones","ejecutivo"], sensibilidad:"interno" },
+            { id:"dash-RPAUT009", tipo:"Reporte", nombre:"RPAUT009. Dashboard Análisis Captaciones", dominio:"Banca Privada", categoria:"Privada", descripcion:"Análisis de captaciones con depósitos, plazos, tasas, crecimiento y mix.", url:"https://app.powerbi.com/groups/228e0f9c-6ed5-4e5f-a6b6-32228c894a1f/reports/3d7c2449-de02-4d99-b66b-b466556e55de/ReportSectioneeff1636f4f2bd18048e?experience=power-bi", owner:"Monica Hernandez Brenes", patrocinador:"Laura Vargas", estado:"activo", tags:["captaciones","depósitos","plazos","tasas","crecimiento","mix"], sensibilidad:"interno" },
+            { id:"dash-RPAUT047", tipo:"Reporte", nombre:"RPAUT047. Visión General Crédito Prendario", dominio:"Banca Personas", categoria:"Personas", descripcion:"Seguimiento de cartera de crédito prendario con resumen de riesgo y colocación.", url:"https://app.powerbi.com/reportEmbed?reportId=aa6c18db-c8b4-437e-a99e-76ec9a2cec67&autoAuth=true&ctid=355a3609-bc80-4b34-aa61-638d080bd255", owner:"Alcides Alejandro Arroyo Arroyo", patrocinador:"Joylie Ramírez Chacón", estado:"activo", tags:["crédito prendario","resumen","cartera","riesgo","colocación"], sensibilidad:"interno" },
+            { id:"dash-RPAUT048", tipo:"Reporte", nombre:"RPAUT048. Visión General Crédito Hipotecario", dominio:"Banca Personas", categoria:"Personas", descripcion:"Seguimiento de cartera hipotecaria con colocación, mora y ltv.", url:"https://app.powerbi.com/reportEmbed?reportId=a9689a00-961d-4262-86b5-b127ee5d0fac&autoAuth=true&ctid=355a3609-bc80-4b34-aa61-638d080bd255", owner:"Alcides Alejandro Arroyo Arroyo", patrocinador:"Joylie Ramírez Chacón", estado:"activo", tags:["hipotecario","cartera","colocación","mora","ltv"], sensibilidad:"interno" },
+            { id:"dash-RPAUT063", tipo:"Reporte", nombre:"RPAUT063. Distribución por Cantidad de Productos", dominio:"Banca Personas", categoria:"Personas", descripcion:"Distribución y profundidad por cantidad de productos para impulsar cross sell.", url:"https://app.powerbi.com/groups/dad0b768-389d-4a03-861f-012a8b2667b8/reports/689fe9a5-f6ba-49c6-8c0a-5a96d0d99b52/f83b394482d0d8decd2b?experience=power-bi", owner:"Estefanía Villalobos Monge", patrocinador:"Eduardo Solano Brenes", estado:"activo", tags:["cantidad de productos","distribución","profundidad","cross sell"], sensibilidad:"interno" },
+            { id:"dash-RPAUT067", tipo:"Reporte", nombre:"RPAUT067. Reporte de Clientes según Estado", dominio:"Productos y Experiencia Cliente", categoria:"Clientes", descripcion:"Calidad de clientes por estado activo, inactivo o bloqueado con clasificación.", url:"https://app.powerbi.com/groups/dad0b768-389d-4a03-861f-012a8b2667b8/reports/d6eac8a3-2d23-4aea-955e-58375c7eee22/db2afccaea72e9e8805d?experience=power-bi", owner:"Estefanía Villalobos Monge", patrocinador:"Ana María Moscoso Doring", estado:"activo", tags:["clientes","estado","activo","inactivo","bloqueado","clasificación"], sensibilidad:"interno" },
+            { id:"dash-MOD71", tipo:"Modelo", nombre:"MOD71. Modelo de Geolocalización de Surcursales", dominio:"Banca Personas", categoria:"Personas", descripcion:"Geolocalización con latitud y longitud para asignar sucursal según cliente y ubicación en cantón, distrito y provincia.", url:"https://app.powerbi.com/groups/fb362940-81bc-42a7-bf7e-df33175706f8/reports/ea388a03-1c31-49ab-9238-dd97cd9ae084/ab306525e25dd0859b08?experience=power-bi", owner:"Osvaldo Andrey Mora Mora", patrocinador:"Moises Alvares Navarro", estado:"activo", tags:["latitud","longitud","socursal","cliente","ubicación","canton","distrito","provincia"], sensibilidad:"interno" },
+            { id:"dash-TRANS06", tipo:"Consolidado", nombre:"TRANS06. Consolidado Control Cargas", dominio:"Riesgos y Datos", categoria:"Datos", descripcion:"Consolidado de registros y cargas con fechas de actualización y alertas sobre tablas.", url:"https://app.powerbi.com/groups/fb362940-81bc-42a7-bf7e-df33175706f8/reports/736c2e2f-3e6e-458b-a12c-04a4bd063ff6/6149779c883190d76c5a?experience=power-bi", owner:"Osvaldo Andrey Mora Mora", patrocinador:"Roberto Valerio", estado:"activo", tags:["registros","cargas","fechas actualización","alertas","tablas"], sensibilidad:"interno" },
+            { id:"dash-PROY68", tipo:"Proyecto", nombre:"PROY68. Ingresos a Dashboard Equipo de Análisis de Datos", dominio:"Riesgos y Datos", categoria:"Datos", descripcion:"Consultas e ingresos a dashboards y tableros publicados para seguimiento.", url:"https://app.powerbi.com/groups/fb362940-81bc-42a7-bf7e-df33175706f8/reports/78676649-c9d1-41a2-be6c-e4aee79978ae/e452d506d055bc6618f5?experience=power-bi", owner:"Osvaldo Andrey Mora Mora", patrocinador:"Roberto Valerio", estado:"activo", tags:["consultas","dashboard","tableros","publicados","ingresos"], sensibilidad:"interno" },
+            { id:"dash-PROY68", tipo:"Proyecto", nombre:"PROY68. Control Migración Power BI", dominio:"Riesgos y Datos", categoria:"Datos", descripcion:"Control de dashboards del equipo de análisis con registros y migración.", url:"https://app.powerbi.com/groups/fb362940-81bc-42a7-bf7e-df33175706f8/reports/0f7169a0-66ba-4a8e-bd50-815d0a0db045/b0e721d0a654e0864edf?experience=power-bi", owner:"Osvaldo Andrey Mora Mora", patrocinador:"Roberto Valerio", estado:"activo", tags:["dashboard","equipo","análisis","registros","migración"], sensibilidad:"interno" },
+            { id:"dash-PROY60", tipo:"Proyecto", nombre:"PROY60. Control STAGE_TCG (LISTENERHUB)", dominio:"Riesgos y Datos", categoria:"Datos", descripcion:"Calidad de registros con actualización de cargas para producción y listenerhub.", url:"https://app.powerbi.com/groups/fb362940-81bc-42a7-bf7e-df33175706f8/reports/9e20bf42-f396-4c86-9caa-c16f134724e4/8f98ed08d24dcd202507?experience=power-bi", owner:"Osvaldo Andrey Mora Mora", patrocinador:"Gustavo Lobo", estado:"activo", tags:["calidad","registros","actualización","cargas","producción","listenerhub"], sensibilidad:"interno" },
+            { id:"dash-RPAUT068", tipo:"Reporte", nombre:"RPAUT068. Modelo Rentabilidad por Tipo Cliente", dominio:"Finanzas y Operaciones", categoria:"Finanzas", descripcion:"Sin descripción disponible.", url:"https://app.powerbi.com/reportEmbed?reportId=98696dc4-f799-4b3f-a783-7ed79742e2f4&autoAuth=true&ctid=355a3609-bc80-4b34-aa61-638d080bd255", owner:"Roberto Valerio Sánchez", patrocinador:"don Luis Carlos Rodriguez | Director de Finanzas y Operaciones", estado:"activo", tags:[], sensibilidad:"interno" },
+            { id:"dash-", tipo:"Reporte", nombre:". Indicadores Institucionales de Gestión Proactiva", dominio:"Finanzas y Operaciones", categoria:"Finanzas", descripcion:"Sin descripción disponible.", url:"https://app.powerbi.com/reportEmbed?reportId=0077ecbb-3070-4cdd-844a-18c04f2b9b94&autoAuth=true&ctid=355a3609-bc80-4b34-aa61-638d080bd255&actionBarEnabled=true&reportCopilotInEmbed=true", owner:"Roberto Valerio Sánchez", patrocinador:"don Luis Carlos Rodriguez | Director de Finanzas y Operaciones", estado:"activo", tags:[], sensibilidad:"interno" },
+            { id:"dash-HERAUT09", tipo:"Herramienta", nombre:"HERAUT09. Información demográfica de Tarjetahabientes", dominio:"Banca Personas", categoria:"Personas", descripcion:"Demografía de tarjetahabientes por edad, género, ingreso y ubicación para perfilar.", url:"https://app.powerbi.com/groups/fb362940-81bc-42a7-bf7e-df33175706f8/list?experience=power-bi&subfolderId=51034", owner:"Osvaldo Andrey Mora Mora", patrocinador:"Eduardo Solano Brenes", estado:"activo", tags:["demografía","tarjetahabientes","edad","género","ingreso","ubicación","perfiles"], sensibilidad:"interno" },
+            { id:"dash-HERAUT24", tipo:"Herramienta", nombre:"HERAUT24. Herramienta de perfilación - Visión 360 - Banca Privada- Personas", dominio:"Banca Privada", categoria:"Privada", descripcion:"Visión 360 de banca privada personas con perfil, activos, riesgo, preferencias y patrimonio.", url:"https://app.powerbi.com/links/obxXumfCeR?ctid=355a3609-bc80-4b34-aa61-638d080bd255&pbi_source=linkShare", owner:"Monica Hernandez Brenes", patrocinador:"Laura Vargas", estado:"activo", tags:["banca privada","visión 360","perfil","activos","riesgo","preferencias","patrimonio","personas"], sensibilidad:"interno" },
+            { id:"dash-HERAUT24", tipo:"Herramienta", nombre:"HERAUT24. Herramienta de perfilación - Visión 360 - Banca Privada-Empresas", dominio:"Banca Privada", categoria:"Privada", descripcion:"Visión 360 de banca privada empresas con perfil, activos, riesgo, preferencias y patrimonio.", url:"https://app.powerbi.com/links/VAOOxKwmMK?ctid=355a3609-bc80-4b34-aa61-638d080bd255&pbi_source=linkShare", owner:"Monica Hernandez Brenes", patrocinador:"Laura Vargas", estado:"activo", tags:["banca privada","visión 360","perfil","activos","riesgo","preferencias","patrimonio","empresas"], sensibilidad:"interno" },
+            { id:"dash-HERAUT47", tipo:"Herramienta", nombre:"HERAUT47. Herramienta de Detección de Cuentas de Efectivo a Bloquear o Cancelar", dominio:"Banca Personas", categoria:"Personas", descripcion:"Monitoreo de cuentas de efectivo para fraude y aml con riesgo, bloqueo, cancelación y alertas.", url:"https://app.powerbi.com/groups/7d2b285f-4467-49b2-b06e-aa2b11063a99/reports/700cbb6f-c8ad-4c40-a26c-f313357e20fb/b7dd2ab03573adba5b0d?experience=power-bi", owner:"Alcides Alejandro Arroyo Arroyo", patrocinador:"Magaly Arias Gómez", estado:"activo", tags:["monitoreo","cuentas efectivo","fraude","aml","riesgo","bloqueo","cancelación","alertas"], sensibilidad:"interno" },
+            { id:"dash-RPAUT041", tipo:"Reporte", nombre:"RPAUT041. Control de Autogestión (Banco)", dominio:"Banca Personas", categoria:"Personas", descripcion:"Autogestión en banco con canales, transaccionalidad y adopción.", url:"https://app.powerbi.com/reportEmbed?reportId=16b32ea0-87a8-4ad3-946b-aedd21c3d5bd&autoAuth=true&ctid=355a3609-bc80-4b34-aa61-638d080bd255", owner:"Estefanía Villalobos Monge", patrocinador:"Laura Salazar Reyes", estado:"activo", tags:["autogestión","banco","canales","transaccionalidad","adopción"], sensibilidad:"interno" },
+            { id:"dash-HERAUT48", tipo:"Herramienta", nombre:"HERAUT48. Generador de Cartera - Prendario e Hipotecario", dominio:"Banca Personas", categoria:"Personas", descripcion:"Cartera de préstamos para gestión de clientes y análisis.", url:"https://app.powerbi.com/reportEmbed?reportId=f042dfad-399f-4685-829f-e8ac0faf364d&autoAuth=true&ctid=355a3609-bc80-4b34-aa61-638d080bd255", owner:"Alcides Alejandro Arroyo Arroyo", patrocinador:"Joylie Ramírez Chacón", estado:"activo", tags:["cartera","préstamos","gestión","clientes","análisis"], sensibilidad:"interno" },
+            { id:"dash-MOD88.", tipo:"Modelo", nombre:"MOD88.. Análisis Distribución Montos Pymes", dominio:"Banca Empresas", categoria:"Empresas", descripcion:"Distribución de montos en pymes por productos activos y pasivos para límites de crédito.", url:"https://app.powerbi.com/reportEmbed?reportId=262e5a80-00ac-4118-8772-82dfbc3e149b&autoAuth=true&ctid=355a3609-bc80-4b34-aa61-638d080bd255", owner:"Estefanía Villalobos Monge", patrocinador:"César Muñoz Díaz", estado:"activo", tags:["pymes","montos","límites","productos","crédito"], sensibilidad:"interno" },
+            { id:"dash-PROY26", tipo:"Proyecto", nombre:"PROY26. Apoyo analítico a Talento Humano - Indicadores Principales", dominio:"Talento Humano", categoria:"Humano", descripcion:"Indicadores de talento humano con calidad de registros, actualización y cargas para producción y listenerhub.", url:"https://osvaldo757.github.io/Recursos_Humanos_Banco_Promerica/", owner:"Osvaldo Andrey Mora Mora", patrocinador:"Sol Echeverria", estado:"activo", tags:["calidad","registros","actualización","cargas","producción","listenerhub"], sensibilidad:"interno" },
+            { id:"dash-RPAUT056", tipo:"Reporte", nombre:"RPAUT056. Metas Certificados Banca Privada", dominio:"Banca Privada", categoria:"Privada", descripcion:"Metas de certificados en banca privada con avance y saldos.", url:"https://app.powerbi.com/groups/228e0f9c-6ed5-4e5f-a6b6-32228c894a1f/reports/ac09e14d-a9b8-4ff8-a273-dd4c1e5edbce?ctid=355a3609-bc80-4b34-aa61-638d080bd255&pbi_source=linkShare", owner:"Monica Hernandez Brenes", patrocinador:"Sihoban Reyes Gutierrez", estado:"activo", tags:["certificados","banca privada","metas","avance","saldos"], sensibilidad:"interno" },
+            { id:"dash-HERAUT50", tipo:"Herramienta", nombre:"HERAUT50. Segmentación Estratégica y Rentabilidad - Banca Personas", dominio:"Banca Personas", categoria:"Personas", descripcion:"Cruce de segmentación y rentabilidad de clientes con análisis de contribución.", url:"https://app.powerbi.com/reportEmbed?reportId=5da2cc54-7341-4271-b90c-298b6b558b87&autoAuth=true&ctid=355a3609-bc80-4b34-aa61-638d080bd255", owner:"Alcides Alejandro Arroyo Arroyo", patrocinador:"Eduardo Solano Brenes", estado:"activo", tags:["segmentación","rentabilidad","clientes","análisis","contribución"], sensibilidad:"interno" },
+            { id:"dash-HERAUT51", tipo:"Herramienta", nombre:"HERAUT51. Visor Estratégico - Banca Personas", dominio:"Banca Personas", categoria:"Personas", descripcion:"Indicadores estratégicos consolidados para decisiones y oportunidades.", url:"https://app.powerbi.com/reportEmbed?reportId=7106a572-3eb9-45fc-961a-ae8c9e88f115&autoAuth=true&ctid=355a3609-bc80-4b34-aa61-638d080bd255", owner:"Alcides Alejandro Arroyo Arroyo", patrocinador:"Eduardo Solano Brenes", estado:"activo", tags:["indicadores","estrategia","decisiones","oportunidades","consolidado"], sensibilidad:"interno" },
+            { id:"dash-RPAUT082", tipo:"Reporte", nombre:"RPAUT082. Principalidad - Banca Empresas", dominio:"Banca Empresas", categoria:"Empresas", descripcion:"Seguimiento de principalidad para clientes jurídicos y su gestión.", url:"https://app.powerbi.com/reportEmbed?reportId=60db89ee-8770-4a6d-9c39-db9445c53ab6&autoAuth=true&ctid=355a3609-bc80-4b34-aa61-638d080bd255", owner:"Alcides Alejandro Arroyo Arroyo", patrocinador:"Juan Manual Jiménez Solis", estado:"activo", tags:["principalidad","seguimiento","clientes","jurídicos","gestión"], sensibilidad:"interno" },
+            { id:"dash-RPAUT083", tipo:"Reporte", nombre:"RPAUT083. Matriz Segmentación Estratégica - Persona Física - CR", dominio:"Productos y Experiencia Cliente", categoria:"Clientes", descripcion:"Segmentación para Costa Rica con clasificación de personas y estrategia.", url:"https://app.powerbi.com/reportEmbed?reportId=4ed0f5b6-0eea-4c86-bb62-3211ff463f60&autoAuth=true&ctid=355a3609-bc80-4b34-aa61-638d080bd255", owner:"Alcides Alejandro Arroyo Arroyo", patrocinador:"Ana María Moscoso Doring", estado:"activo", tags:["segmentación","costa rica","clasificación","personas","estrategia"], sensibilidad:"interno" },
+            { id:"dash-HERAUT49", tipo:"Herramienta", nombre:"HERAUT49. Gestión Integral del Cliente - Enfoque Personalizado - Banca Empresas", dominio:"Banca Empresas", categoria:"Empresas", descripcion:"Clientes jurídicos con experiencias personalizadas según comportamiento bancario y asesoría.", url:"https://app.powerbi.com/reportEmbed?reportId=d1ed0ef6-76b1-4223-92a3-1899737ea116&autoAuth=true&ctid=355a3609-bc80-4b34-aa61-638d080bd255", owner:"Alcides Alejandro Arroyo Arroyo", patrocinador:"Carlos Araya Valverde", estado:"activo", tags:["clientes","personalizados","comportamiento","banca","asesoría"], sensibilidad:"interno" },
+            { id:"dash-PROY85", tipo:"Proyecto", nombre:"PROY85. PROY85. Protagonistas", dominio:"Productos y Experiencia Cliente", categoria:"Clientes", descripcion:"Información sobre mujeres e inclusión con comportamiento, mora y crecimiento.", url:"https://app.powerbi.com/reportEmbed?reportId=27de27de-6568-4703-8009-1e31ccb8c3b4&autoAuth=true&ctid=355a3609-bc80-4b34-aa61-638d080bd255", owner:"Nancy Rebeca Garcia Ureña", patrocinador:"Marianne Hut Cabezas", estado:"activo", tags:["mujeres","inclusión","comportamiento","mora","crecimiento"], sensibilidad:"interno" },
+            { id:"dash-PROY26", tipo:"Proyecto", nombre:"PROY26. Apoyo analítico a Talento Humano - Visión 360 Colaboradores", dominio:"Talento Humano", categoria:"Humano", descripcion:"Visión 360 de colaboradores con calidad de registros, actualización y cargas.", url:"https://app.powerbi.com/groups/fb362940-81bc-42a7-bf7e-df33175706f8/reports/60a74003-3ddc-468a-b6d6-8000be9a6a8d/e25e8fc237aa319b6280?experience=power-bi", owner:"Osvaldo Andrey Mora Mora", patrocinador:"Sol Echeverria", estado:"activo", tags:["calidad","registros","actualización","cargas","producción","listenerhub"], sensibilidad:"interno" },
+            { id:"dash-PROY26", tipo:"Proyecto", nombre:"PROY26. Apoyo analítico a Talento Humano - Análisis de Terminaciones", dominio:"Talento Humano", categoria:"Humano", descripcion:"Indicadores de terminaciones con calidad de registros, actualización y cargas.", url:"https://app.powerbi.com/groups/fb362940-81bc-42a7-bf7e-df33175706f8/reports/1a72112a-9281-4462-93b0-7a17e77b003d/ReportSectiona1fb9cf19b7411364040?experience=power-bi", owner:"Osvaldo Andrey Mora Mora", patrocinador:"Sol Echeverria", estado:"activo", tags:["calidad","registros","actualización","cargas","producción","listenerhub"], sensibilidad:"interno" },
+            { id:"dash-PROY26", tipo:"Proyecto", nombre:"PROY26. Apoyo analítico a Talento Humano - Análisis por Género", dominio:"Talento Humano", categoria:"Humano", descripcion:"Indicadores por género con calidad de registros, actualización y cargas.", url:"https://app.powerbi.com/groups/fb362940-81bc-42a7-bf7e-df33175706f8/reports/b960491d-132e-4a57-b09e-a5c30d691339/ReportSection39bef77670de34a09617?experience=power-bi", owner:"Osvaldo Andrey Mora Mora", patrocinador:"Sol Echeverria", estado:"activo", tags:["calidad","registros","actualización","cargas","producción","listenerhub"], sensibilidad:"interno" },
+            { id:"dash-PROY26", tipo:"Proyecto", nombre:"PROY26. Apoyo analítico a Talento Humano - Análisis de Salarios", dominio:"Talento Humano", categoria:"Humano", descripcion:"Detalle salarial con indicadores y calidad de registros para producción y listenerhub.", url:"https://app.powerbi.com/groups/fb362940-81bc-42a7-bf7e-df33175706f8/reports/d4060e25-38ff-4aeb-89f4-75fbb733aee9/ReportSection39bef77670de34a09617?experience=power-bi", owner:"Osvaldo Andrey Mora Mora", patrocinador:"Sol Echeverria", estado:"activo", tags:["calidad","registros","actualización","cargas","producción","listenerhub"], sensibilidad:"interno" },
+            { id:"dash-PROY26", tipo:"Proyecto", nombre:"PROY26. Apoyo analítico a Talento Humano - Análisis por Colaborador - Demo", dominio:"Talento Humano", categoria:"Humano", descripcion:"Demo de carrera del colaborador con calidad de registros, actualización y cargas.", url:"https://app.powerbi.com/groups/fb362940-81bc-42a7-bf7e-df33175706f8/reports/3474f6b5-6366-4468-b6e7-2496a49884d4/ReportSection39bef77670de34a09617?experience=power-bi", owner:"Osvaldo Andrey Mora Mora", patrocinador:"Sol Echeverria", estado:"activo", tags:["calidad","registros","actualización","cargas","producción","listenerhub"], sensibilidad:"interno" },
+            { id:"dash-PROY26", tipo:"Proyecto", nombre:"PROY26. Apoyo analítico a Talento Humano - Análisis 9-Box - Demo", dominio:"Talento Humano", categoria:"Humano", descripcion:"Demo 9-box para evaluar desempeño y potencial con calidad de registros y actualización.", url:"https://app.powerbi.com/groups/fb362940-81bc-42a7-bf7e-df33175706f8/reports/3c7318c7-e1ca-4e5d-99f3-8e4845c8aefb/ReportSectiondaffbbe0186073920ba7?experience=power-bi", owner:"Osvaldo Andrey Mora Mora", patrocinador:"Sol Echeverria", estado:"activo", tags:["calidad","registros","actualización","cargas","producción","listenerhub"], sensibilidad:"interno" }
+        ];
 
-  <script>
-  // ====== CONFIG ======
-  // Opción A: dejar un Excel accesible por URL (mismo dominio / CDN)
-  // Ejemplo: "/data/catalogo_dashboards.xlsx"
-  const EXCEL_URL = ""; // <- coloque aquí la URL del Excel si aplica
-  const EXCEL_SHEET_NAME = null; // si quiere forzar una hoja específica, ponga el nombre. Si es null toma la primera
+        const DOMAINS = [...new Set(DASH_DATA.map(d => d.dominio))];
 
-  // ====== Estado & helpers ======
-  let DASH_DATA = [];
-  let DOMAINS = [];
+        // --- ICONOS SVG ---
+        const ICONS = {
+            "Herramienta": `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 text-green-600 dark:text-green-400"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>`,
+            "Reporte": `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 text-green-600 dark:text-green-400"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>`,
+            "Proyecto": `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 text-green-600 dark:text-green-400"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>`,
+            "Modelo": `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 text-green-600 dark:text-green-400"><path d="M12 2a10 10 0 0 0-4.32 19.14"></path><path d="M5 21a10 10 0 0 1 14.32-8.86"></path><path d="M19 3a10 10 0 0 0-14.32 8.86"></path><circle cx="12" cy="12" r="3"></circle></svg>`,
+            "Consolidado": `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 text-green-600 dark:text-green-400"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`,
+            "Default": `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 text-green-600 dark:text-green-400"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>`,
+        };
 
-  const SYNONYMS = { dashboard:["dash","tablero","panel"], orquestador:["orquestrador","orchestrator"], "master analytics":["mast analitics","master analitics","master analitycs"], promerica:["banco promerica","el banco"] };
-  const CORRECTIONS = { analitics:"analytics", aceder:"acceder", dashboar:"dashboard" };
+        // --- ESTADO DE LA APLICACIÓN ---
+        let searchQuery = '';
+        let activeFilters = {
+            dominio: [],
+        };
 
-  const LS_KEYS = { q:"catdash.q", cat:"catdash.cat" };
-  const state = { q:"", category:"", onlyActive:true, detected:[] };
+        // --- ELEMENTOS DEL DOM ---
+        const searchInput = document.getElementById('search-input');
+        const domainFiltersContainer = document.getElementById('domain-filters');
+        const clearFiltersBtn = document.getElementById('clear-filters-btn');
+        const dashboardGrid = document.getElementById('dashboard-grid');
+        const resultsCount = document.getElementById('results-count');
+        const noResults = document.getElementById('no-results');
+        const modal = document.getElementById('dashboard-modal');
+        const modalContent = modal.querySelector('.modal-content');
 
-  const normalizeText = (s)=> (s||"").toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/\s+/g,' ');
-  function levenshtein(a,b){ a=normalizeText(a); b=normalizeText(b); const m=a.length,n=b.length; if(m===0) return n; if(n===0) return m; const dp=new Array(n+1); for(let j=0;j<=n;j++) dp[j]=j; for(let i=1;i<=m;i++){ let prev=i-1; dp[0]=i; for(let j=1;j<=n;j++){ const tmp=dp[j]; const cost=a[i-1]===b[j-1]?0:1; dp[j]=Math.min(dp[j]+1, dp[j-1]+1, prev+cost); prev=tmp; } } return dp[n]; }
-  function expandSynonyms(tokens){ const expanded=new Set(tokens); for(const [key,vals] of Object.entries(SYNONYMS)){ const all=[key,...vals].map(normalizeText); for(const t of tokens){ if(all.some(x=> x.includes(t)||t.includes(x))){ all.forEach(x=>expanded.add(x)); } } } return Array.from(expanded); }
 
-  function applyCorrections(q){ return normalizeText(q).split(' ').map(p=> CORRECTIONS[p]||p).join(' '); }
-  function tokenize(q){ return normalizeText(q).split(' ').filter(t=>t); }
+        // --- FUNCIONES DE RENDERIZADO ---
+        
+        function renderFilters() {
+            domainFiltersContainer.innerHTML = DOMAINS.map(domain => {
+                const isActive = activeFilters.dominio.includes(domain);
+                return `
+                    <button
+                        data-domain="${domain}"
+                        class="filter-btn px-3 py-1.5 text-sm rounded-full transition-colors ${
+                            isActive 
+                            ? 'bg-green-600 text-white font-semibold shadow' 
+                            : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700'
+                        }"
+                    >
+                        ${domain}
+                    </button>
+                `;
+            }).join('');
+        }
 
-  function scoreItem(item,tokens){ if(tokens.length===0) return {score:0,reason:[]}; const fields={ nombre:normalizeText(item.nombre), desc:normalizeText(item.descripcion||""), cat:normalizeText(item.dominio||item.categoria||""), tags:(item.tags||[]).map(normalizeText)}; let score=0; const reason=[]; for(const t of tokens){ if(fields.nombre.includes(t)){score+=5;reason.push('n:'+t);} if(fields.desc.includes(t)){score+=2;reason.push('d:'+t);} if(fields.cat.includes(t)){score+=3;reason.push('c:'+t);} if(fields.tags.some(x=>x.includes(t))){score+=3;reason.push('g:'+t);} if(fields.nombre.split(' ').some(w=>w.startsWith(t))) score+=2; if(fields.tags.some(x=> x.split(' ').some(w=>w.startsWith(t)))) score+=1; const th=Math.max(1,Math.floor(t.length*0.25)); const near=[fields.nombre,fields.desc,fields.cat,...fields.tags].some(v=> levenshtein(t,v)<=th); if(near){score+=1;reason.push('~:'+t);} } return {score,reason}; }
+        function renderDashboards() {
+            const lowercasedQuery = searchQuery.toLowerCase();
+            const filteredData = DASH_DATA.filter(item => {
+                const searchMatch = searchQuery === '' ||
+                    item.nombre.toLowerCase().includes(lowercasedQuery) ||
+                    item.descripcion.toLowerCase().includes(lowercasedQuery) ||
+                    item.tags.some(tag => tag.toLowerCase().includes(lowercasedQuery));
 
-  function persist(){ try{ localStorage.setItem(LS_KEYS.q,state.q); localStorage.setItem(LS_KEYS.cat,state.category);}catch(e){} }
-  function restore(){ try{ state.q=localStorage.getItem(LS_KEYS.q)||''; state.category=localStorage.getItem(LS_KEYS.cat)||''; }catch(e){} state.onlyActive=true; if(state.category && !DOMAINS.includes(state.category)) state.category=''; }
+                const domainMatch = activeFilters.dominio.length === 0 ||
+                    activeFilters.dominio.includes(item.dominio);
 
-  function buildChips(){ const chipRow=document.getElementById('chipRow'); chipRow.innerHTML=''; const cats=DOMAINS.slice().sort((a,b)=>a.localeCompare(b)); const all=['Todos',...cats]; all.forEach(cat=>{ const btn=document.createElement('button'); btn.className='chip'; const value=cat==='Todos'?'' : cat; btn.setAttribute('aria-pressed', state.category===value?'true':'false'); btn.textContent=cat; btn.addEventListener('click',()=>{ state.category=value; [...chipRow.children].forEach(c=> c.setAttribute('aria-pressed','false')); btn.setAttribute('aria-pressed','true'); persist(); render(); }); chipRow.appendChild(btn); }); }
+                return searchMatch && domainMatch;
+            });
 
-  function buildSuggestions(indexTokens,q){ const qn=normalizeText(q); const sugBox=document.getElementById('suggestions'); const sugList=sugBox.querySelector('ul'); if(!qn){ sugBox.setAttribute('aria-expanded','false'); sugList.innerHTML=''; return;} const parts=tokenize(qn); const candidates=new Set(); indexTokens.forEach(tok=>{ if(parts.some(p=> tok.startsWith(p)||p.startsWith(tok)|| levenshtein(p,tok)<=Math.max(1,Math.floor(p.length*0.25)))) candidates.add(tok); }); const arr=Array.from(candidates).slice(0,12); sugList.innerHTML=arr.map((t,i)=> `<li role="option" data-i="${i}">${t}</li>`).join(''); sugBox.setAttribute('aria-expanded', arr.length>0?'true':'false'); }
+            resultsCount.textContent = `Mostrando ${filteredData.length} de ${DASH_DATA.length} recursos.`;
+            
+            if (filteredData.length === 0) {
+                dashboardGrid.innerHTML = '';
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+                dashboardGrid.innerHTML = filteredData.map(item => {
+                    const isActive = item.estado === 'activo';
+                    return `
+                        <div data-id="${item.id}" class="dashboard-card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 cursor-pointer group ${!isActive ? 'opacity-60 grayscale' : ''}">
+                            <div class="p-6">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex items-center gap-4">
+                                         <div class="flex-shrink-0 bg-green-100 dark:bg-green-900/50 p-3 rounded-lg">
+                                            ${ICONS[item.tipo] || ICONS['Default']}
+                                        </div>
+                                        <div>
+                                            <div class="uppercase tracking-wide text-xs text-green-600 dark:text-green-400 font-semibold">${item.dominio}</div>
+                                            <p class="block mt-1 text-lg leading-tight font-bold text-black dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">${item.nombre}</p>
+                                        </div>
+                                    </div>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${isActive ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'}">
+                                        ${isActive ? 'Activo' : 'Inactivo'}
+                                    </span>
+                                </div>
+                                <p class="mt-4 text-gray-500 dark:text-gray-400 text-sm">${item.descripcion}</p>
+                                <div class="mt-4 flex flex-wrap gap-2">
+                                    ${item.tags.slice(0, 3).map(tag => `<span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-md text-xs">${tag}</span>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
 
-  function buildNearTerms(indexTokens,parts){ const near=[]; const sugBox=document.getElementById('nearTerms'); for(const p of parts){ let best=indexTokens.map(tok=>({tok,d:levenshtein(p,tok)})).sort((a,b)=>a.d-b.d).slice(0,2).map(x=>x.tok); near.push(...best);} const uniq=Array.from(new Set(near)).slice(0,3); sugBox.innerHTML=''; uniq.forEach(t=>{ const b=document.createElement('button'); b.className='chip'; b.textContent=t; b.addEventListener('click',()=>{ document.getElementById('searchInput').value=t; state.q=t; persist(); render(); }); sugBox.appendChild(b); }); }
+        function openModal(item) {
+            modalContent.innerHTML = `
+                <div class="p-8">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center gap-4">
+                            <div class="flex-shrink-0 bg-green-100 dark:bg-green-900/50 p-4 rounded-xl">
+                                ${ICONS[item.tipo].replace('h-6 w-6', 'h-8 w-8') || ICONS['Default']}
+                            </div>
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">${item.nombre}</h2>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">${item.dominio}</p>
+                            </div>
+                        </div>
+                        <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </button>
+                    </div>
+                    <div class="mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
+                        <p class="text-gray-700 dark:text-gray-300">${item.descripcion}</p>
+                        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+                                <p class="font-semibold text-gray-600 dark:text-gray-300">Patrocinador</p>
+                                <p class="text-gray-800 dark:text-gray-100">${item.patrocinador}</p>
+                            </div>
+                            <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+                                <p class="font-semibold text-gray-600 dark:text-gray-300">Owner</p>
+                                <p class="text-gray-800 dark:text-gray-100">${item.owner}</p>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p class="font-semibold text-gray-600 dark:text-gray-300 text-sm">Tags</p>
+                            <div class="mt-2 flex flex-wrap gap-2">
+                                ${item.tags.map(tag => `<span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-full text-xs">${tag}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-900/50 px-8 py-4 flex flex-col sm:flex-row gap-3 justify-end border-t border-gray-200 dark:border-gray-700">
+                    <button id="copy-link-btn" class="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        Copiar Enlace
+                    </button>
+                    <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-lg hover:bg-green-700">
+                        Abrir Dashboard 
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+            `;
+            modal.classList.remove('modal-hidden');
+            document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+            document.getElementById('copy-link-btn').addEventListener('click', () => navigator.clipboard.writeText(item.url));
+        }
 
-  // ====== Render ======
-  function statePillHTML(est){ const active = normalizeText(est)==='activo'; const label=active?'Activo':'Inactivo'; return `<svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" style=\"vertical-align:middle\"><circle cx=\"12\" cy=\"12\" r=\"10\" fill=\"${active?'#61BF1A':'#9E9E9E'}\"/></svg> ${label}`; }
-  function svgOpen(){ return '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3z"/></svg>'; }
-  function svgLink(){ return '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3.9 12a5 5 0 0 1 5-5h3v2h-3a3 3 0 1 0 0 6h3v2h-3a5 5 0 0 0 0-10z"/></svg>'; }
-  function svgCopy(){ return '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16 1H4a2 2 0 0 0-2 2v12h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg>'; }
-  function svgPause(){ return '<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>'; }
+        function closeModal() {
+            modal.classList.add('modal-hidden');
+        }
 
-  function copyText(text,notify){ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(()=> toast(notify)).catch(()=> fallbackCopy(text,notify)); } else { fallbackCopy(text,notify);} }
-  function fallbackCopy(text,notify){ const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); toast(notify);}catch(e){} document.body.removeChild(ta);} 
-  function toast(msg){ const t=document.createElement('div'); t.textContent=msg; t.style.position='fixed'; t.style.bottom='18px'; t.style.left='50%'; t.style.transform='translateX(-50%)'; t.style.background='var(--green-600)'; t.style.color='#fff'; t.style.padding='8px 12px'; t.style.borderRadius='10px'; t.style.boxShadow='var(--shadow)'; t.style.zIndex=60; document.body.appendChild(t); setTimeout(()=>{ t.remove(); }, 1400); }
+        // --- MANEJADORES DE EVENTOS ---
+        
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            renderDashboards();
+        });
 
-  function render(){ const grid=document.getElementById('grid'); const empty=document.getElementById('emptyState');
-    const qApplied=applyCorrections(state.q); const tokensBase=tokenize(qApplied); const tokens=expandSynonyms(tokensBase);
-    let list=DASH_DATA.slice();
-    if(state.category){ list=list.filter(d=> (d.dominio||d.categoria)===state.category); }
-    if(state.onlyActive){ list=list.filter(d=> normalizeText(d.estado)==='activo'); }
-    let scored=list.map(it=>({item:it,...scoreItem(it,tokens)})); if(tokens.length>0){ scored=scored.filter(x=> x.score>0); }
-    scored.sort((a,b)=> a.item.nombre.localeCompare(b.item.nombre));
+        clearFiltersBtn.addEventListener('click', () => {
+            activeFilters.dominio = [];
+            renderFilters();
+            renderDashboards();
+        });
 
-    grid.innerHTML='';
-    if(scored.length===0){ empty.style.display='block'; buildNearTerms(INDEX, tokensBase); return; } else { empty.style.display='none'; }
+        domainFiltersContainer.addEventListener('click', (e) => {
+            const button = e.target.closest('.filter-btn');
+            if (!button) return;
 
-    scored.forEach(({item})=>{ const card=document.createElement('div'); card.className='card'+(normalizeText(item.estado)!=='activo'?' inactivo':'');
-      const head=document.createElement('div'); head.className='card-header';
-      const h=document.createElement('h3'); h.className='card-title'; h.textContent=item.nombre; head.appendChild(h);
-      const pill=document.createElement('span'); pill.className='badge '+(normalizeText(item.estado)==='activo'?'activo':'inactivo'); pill.innerHTML=statePillHTML(item.estado); head.appendChild(pill);
-      card.appendChild(head);
-      const desc=document.createElement('div'); desc.textContent=item.descripcion||''; card.appendChild(desc);
-      const meta=document.createElement('div'); meta.className='meta';
-      const m1=document.createElement('span'); m1.className='meta-line'; m1.textContent='📁 Dominio: '+(item.dominio||item.categoria||'');
-      const m2=document.createElement('span'); m2.className='meta-line'; m2.textContent='👤 Desarrollador: '+(item.desarrollador||item.owner||'N/A');
-      const m3=document.createElement('span'); m3.className='meta-line'; m3.textContent='🤝 Patrocinador: '+(item.patrocinador||'N/A');
-      if(item.accesosBase) { const m4=document.createElement('span'); m4.className='meta-line'; m4.textContent='🔐 Accesos Base: '+item.accesosBase; meta.appendChild(m4); }
-      if(item.suscripcion) { const m5=document.createElement('span'); m5.className='meta-line'; m5.textContent='🔔 Suscripción: '+item.suscripcion; meta.appendChild(m5); }
-      meta.appendChild(m1); meta.appendChild(m2); meta.appendChild(m3); card.appendChild(meta);
-      const tags=document.createElement('div'); tags.className='tags'; ((item.tags||[])).forEach(t=>{ const s=document.createElement('span'); s.className='tag'; s.textContent=t; tags.appendChild(s); }); card.appendChild(tags);
-      const actions=document.createElement('div'); actions.className='actions';
-      if(item.url){ const aOpen=document.createElement('a'); aOpen.className='btn btn-primary btn-sm'; aOpen.href=item.url; aOpen.target='_blank'; aOpen.rel='noopener'; aOpen.innerHTML=svgOpen()+' Abrir dashboard'; actions.append(aOpen); }
-      const bCopy=document.createElement('button'); bCopy.className='btn btn-ghost btn-sm'; bCopy.innerHTML=svgLink()+' Copiar enlace'; bCopy.addEventListener('click',()=>copyText(item.url||'', 'Enlace copiado'));
-      const bFicha=document.createElement('button'); bFicha.className='btn btn-ghost btn-sm'; bFicha.innerHTML=svgCopy()+' Copiar ficha'; bFicha.addEventListener('click',()=>{ const ficha=`Tipo: ${item.tipo||''}\nCódigo: ${item.id||item.codigo||''}\nNombre: ${item.nombre}\nDominio: ${item.dominio||item.categoria||''}\nEstado: ${item.estado||''}\nDesarrollador: ${item.desarrollador||item.owner||'N/A'}\nPatrocinador: ${item.patrocinador||'N/A'}\nAccesos Base: ${item.accesosBase||''}\nSuscripción: ${item.suscripcion||''}\nAcceso: ${item.url||''}\nPalabras Clave: ${(item.tags||[]).join(', ')}`; copyText(ficha,'Ficha copiada'); });
-      actions.append(bCopy,bFicha); card.appendChild(actions);
-      if(normalizeText(item.estado)!=='activo'){ const paused=document.createElement('div'); paused.className='meta'; paused.innerHTML='<span title="Inactivo">'+svgPause()+' Inactivo</span>'; card.appendChild(paused); }
-      grid.appendChild(card); }); }
+            const domain = button.dataset.domain;
+            const index = activeFilters.dominio.indexOf(domain);
 
-  // ====== Index dinámico para sugerencias ======
-  let INDEX = [];
-  function rebuildIndex(){ const set=new Set(); for(const d of DASH_DATA){ [d.nombre,(d.dominio||d.categoria), (d.patrocinador||d.desarrollador||d.owner), ...(d.tags||[])].forEach(v=>{ (normalizeText(String(v||''))).split(/\s+/).forEach(t=>{ if(t&&t.length>1) set.add(t); }); }); } Object.keys(SYNONYMS).forEach(k=>{ normalizeText(k).split(/\s+/).forEach(t=>{ if(t.length>1) set.add(t); }); SYNONYMS[k].forEach(v=> normalizeText(v).split(/\s+/).forEach(t=>{ if(t.length>1) set.add(t); })); }); INDEX = Array.from(set); }
+            if (index > -1) {
+                activeFilters.dominio.splice(index, 1);
+            } else {
+                activeFilters.dominio.push(domain);
+            }
+            
+            renderFilters();
+            renderDashboards();
+        });
 
-  // ====== Entradas / UI ======
-  const searchInput=document.getElementById('searchInput'); const clearBtn=document.getElementById('clearSearch');
-  clearBtn.addEventListener('click',()=>{ searchInput.value=''; state.q=''; persist(); render(); buildSuggestions(INDEX,''); searchInput.focus(); });
-  searchInput.addEventListener('input',(e)=>{ state.q=e.target.value; persist(); render(); buildSuggestions(INDEX,state.q); });
-  const sugList=document.getElementById('suggestions').querySelector('ul');
-  sugList.addEventListener('click',(e)=>{ const li=e.target.closest('li'); if(!li) return; const val=li.textContent; searchInput.value=val; state.q=val; persist(); render(); buildSuggestions(INDEX,''); });
+        dashboardGrid.addEventListener('click', (e) => {
+            const card = e.target.closest('.dashboard-card');
+            if (!card) return;
 
-  document.getElementById('fileInput').addEventListener('change', async (e)=>{
-    const file = e.target.files?.[0]; if(!file) return; await loadExcel(file); });
+            const dashboardId = card.dataset.id;
+            const selectedDashboard = DASH_DATA.find(item => item.id === dashboardId);
+            if(selectedDashboard) {
+                openModal(selectedDashboard);
+            }
+        });
 
-  // ====== Excel loading ======
-  async function fetchArrayBuffer(url){ const res = await fetch(url); if(!res.ok) throw new Error('No se pudo descargar el Excel'); return await res.arrayBuffer(); }
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
 
-  function parseWorkbook(wb){ const wsname = EXCEL_SHEET_NAME || wb.SheetNames[0]; const ws = wb.Sheets[wsname]; const rows = XLSX.utils.sheet_to_json(ws, {defval:""});
-    // Mapeo de columnas del Excel -> modelo del catálogo
-    const data = rows.map(r=>{
-      const estado = r["Estado"] || r["estado"] || r["ESTADO"] || "";
-      return {
-        tipo: r["Tipo"] || r["tipo"],
-        id: r["Código"] || r["Codigo"] || r["codigo"],
-        codigo: r["Código"] || r["Codigo"] || r["codigo"],
-        nombre: r["Nombre"] || r["nombre"],
-        dominio: r["Dominio"] || r["dominio"],
-        estado: estado,
-        desarrollador: r["Desarrollador"] || r["owner"] || r["Owner"],
-        patrocinador: r["Patrocinador"] || r["patrocinador"],
-        accesosBase: r["Accesos Base"] || r["Accesos"] || "",
-        suscripcion: r["Suscripción"] || r["Suscripcion"] || "",
-        url: r["Acceso"] || r["URL"] || r["Url"] || r["url"],
-        descripcion: r["Descripción"] || r["Descripcion"] || r["descripcion"] || "",
-        tags: String(r["Palabras Clave"]||"").split(/[,;|]/).map(x=>x.trim()).filter(Boolean)
-      };
-    })
-    // Filtrar solo Activos
-    .filter(d=> normalizeText(d.estado)==='activo');
+        // --- INICIALIZACIÓN ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderFilters();
+            renderDashboards();
+        });
 
-    return data;
-  }
-
-  async function loadExcel(source){ try{
-      document.getElementById('loader').style.display='inline';
-      const ab = source instanceof File ? await source.arrayBuffer() : await fetchArrayBuffer(source);
-      const wb = XLSX.read(ab, {type:'array'});
-      DASH_DATA = parseWorkbook(wb);
-      DOMAINS = Array.from(new Set(DASH_DATA.map(d=> d.dominio).filter(Boolean)));
-      rebuildIndex();
-      restore();
-      buildChips();
-      render();
-    } catch(err){ console.error(err); toast('Error cargando Excel'); }
-    finally{ document.getElementById('loader').style.display='none'; }
-  }
-
-  // ====== Boot ======
-  async function boot(){ buildChips(); // inicial vacío
-    if(EXCEL_URL){ try{ await loadExcel(EXCEL_URL); } catch(e){ console.warn('Fallo carga por URL'); } }
-  }
-  document.addEventListener('DOMContentLoaded', boot);
-  </script>
+    </script>
 </body>
 </html>
